@@ -12,6 +12,8 @@ use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\ArticleRepository;
 use ApiPlatform\Metadata\GetCollection;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: ArticleRepository::class)]
 // Déclaration de l'entité comme ressource API avec les verbes HTTP autorisées
@@ -38,6 +40,16 @@ use ApiPlatform\Metadata\GetCollection;
         new Delete() // supprimer une ressource Article
     ]
 )]
+// Vérifier séparemment si la donnée titre d'un article est unique dans la base de données
+#[UniqueEntity(
+    fields: 'title',
+    message: 'Un titre similaire existe déjà'
+)]
+// Vérifier séparemment si la donnée contenu d'un article est unique dans la base de données
+#[UniqueEntity(
+    fields: 'content',
+    message: 'Un contenu similaire existe déjà'
+)]
 class Article
 {
     #[ORM\Id]
@@ -46,9 +58,23 @@ class Article
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'L\'article doit avoir un titre')]
+    #[Assert\Length(
+        min: 6,
+        max: 70,
+        minMessage: 'Le titre de l\'article doit avoir plus de {{ limit }} cractères',
+        maxMessage: 'Le titre de l\'article doit avoir moins de {{ limit }} caractères'
+    )]
     private ?string $title = null;
 
+
     #[ORM\Column(type: Types::TEXT)]
+    #[Assert\Length(
+        min: 100,
+        max: 1200,
+        minMessage: 'Le contenu de l\'article doit avoir plus de {{ limit }} cractères',
+        maxMessage: 'Le contenu de l\'article doit avoir moins de {{ limit }} caractères'
+    )]
     private ?string $content = null;
 
     #[ORM\Column]
