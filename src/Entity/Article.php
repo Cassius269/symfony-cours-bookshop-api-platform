@@ -12,12 +12,18 @@ use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\ArticleRepository;
 use ApiPlatform\Metadata\GetCollection;
+use Doctrine\Persistence\Event\LifecycleEventArgs;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: ArticleRepository::class)]
 // Déclaration de l'entité comme ressource API avec les verbes HTTP autorisées
 #[ApiResource(
+    // Exposition des champs en phases de serialization et déserialization
+    normalizationContext: ['groups' => ['books.read']],
+    denormalizationContext: ['groups' => ['books.write']],
+    // Définition des verbes HTTP autorisées sur l'entité Article
     operations: [
         new Get(), // rendre accessible une ressource grâce à son ID
 
@@ -50,6 +56,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
     fields: 'content',
     message: 'Un contenu similaire existe déjà'
 )]
+#[ORM\HasLifecycleCallbacks] // Activation de l'utilisation de fonction callback pour ajouter une date de création à toute nouvelle ressource Article
 class Article
 {
     #[ORM\Id]
@@ -65,6 +72,7 @@ class Article
         minMessage: 'Le titre de l\'article doit avoir plus de {{ limit }} cractères',
         maxMessage: 'Le titre de l\'article doit avoir moins de {{ limit }} caractères'
     )]
+    #[Groups(['books.read', 'books.write'])]
     private ?string $title = null;
 
 
@@ -75,6 +83,7 @@ class Article
         minMessage: 'Le contenu de l\'article doit avoir plus de {{ limit }} cractères',
         maxMessage: 'Le contenu de l\'article doit avoir moins de {{ limit }} caractères'
     )]
+    #[Groups(['books.read', 'books.write'])]
     private ?string $content = null;
 
     #[ORM\Column]
@@ -134,5 +143,18 @@ class Article
         $this->updatedAt = $updatedAt;
 
         return $this;
+    }
+
+    // Création d'un évenement Doctrine pour l'ajout de date de création à chaque nouvelle ressource ajoutée
+    #[ORM\PrePersist]
+    public function addCreationDateToAnArticle(LifecycleEventArgs $args): void
+    {
+        // dd($args);
+        // Ajout d'une date de création à la date du jour avant l'envoi en base de données de la ressource Article
+        $article = $args->getObject();
+        $article->setCreatedAt(new \DateTimeImmutable());
+
+        // Envoi de la ressource en base de données
+        $args->getObjectManager()->flush();
     }
 }
