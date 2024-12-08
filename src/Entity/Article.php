@@ -16,13 +16,14 @@ use Doctrine\Persistence\Event\LifecycleEventArgs;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Validator\Constraints\Cascade;
 
 #[ORM\Entity(repositoryClass: ArticleRepository::class)]
 // Déclaration de l'entité comme ressource API avec les verbes HTTP autorisées
 #[ApiResource(
     // Exposition des champs en phases de serialization et déserialization
-    normalizationContext: ['groups' => ['books.read']],
-    denormalizationContext: ['groups' => ['books.write']],
+    normalizationContext: ['groups' => ['books.read', 'authors.read']],
+    denormalizationContext: ['groups' => ['books.write', 'authors.write']],
     // Définition des verbes HTTP autorisées sur l'entité Article
     operations: [
         new Get(), // rendre accessible une ressource grâce à son ID
@@ -62,6 +63,7 @@ class Article
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['books.read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
@@ -91,6 +93,11 @@ class Article
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $updatedAt = null;
+
+    #[ORM\ManyToOne(inversedBy: 'articles', cascade: ['persist'])]
+    #[ORM\JoinColumn(nullable: true)]
+    #[Groups(['authors.read', 'authors.write'])]
+    private ?Author $author = null;
 
     public function getId(): ?int
     {
@@ -156,5 +163,17 @@ class Article
 
         // Envoi de la ressource en base de données
         $args->getObjectManager()->flush();
+    }
+
+    public function getAuthor(): ?Author
+    {
+        return $this->author;
+    }
+
+    public function setAuthor(?Author $author): static
+    {
+        $this->author = $author;
+
+        return $this;
     }
 }
