@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Put;
 use ApiPlatform\Metadata\Post;
@@ -84,6 +85,7 @@ class Article
     )]
     #[Groups(['books.read', 'books.write'])]
     // #[ApiFilter(SearchFilter::class, strategy: 'exact')]
+    #[ApiFilter(OrderFilter::class)]
     private ?string $title = null;
 
 
