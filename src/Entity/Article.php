@@ -76,7 +76,7 @@ class Article
         maxMessage: 'Le titre de l\'article doit avoir moins de {{ limit }} caractères'
     )]
     #[Groups(['books.read', 'books.write'])]
-    #[ApiFilter(SearchFilter::class, strategy: 'partial')]
+    #[ApiFilter(SearchFilter::class, strategy: 'exact')]
     private ?string $title = null;
 
 
