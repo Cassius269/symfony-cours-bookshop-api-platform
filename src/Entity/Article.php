@@ -29,7 +29,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
     operations: [
         new Get(), // rendre accessible une ressource grâce à son ID
 
-        new GetCollection( // rendre accessible l'ensemble des ressources
+        new GetCollection( // 1ère route pour rendre accessible l'ensemble des ressources avec une pagination activée 
             paginationEnabled: true, // pagination de la data activée par défaut
             paginationItemsPerPage: 20,  // définir le nombre de ressources articles à afficher par page, 
             paginationClientEnabled: true, // donner la possibilité au client de choisir l'activation de la pagination
@@ -37,7 +37,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
             uriTemplate: '/getarticles', // création d'une route personnalisé
             name: 'getArticles' // donner à la route un nom personnalisé
         ),
-        new GetCollection(
+        new GetCollection( // 2ème route pour rendre accessible l'ensemble des ressources avec une pagination désactivée 
             paginationEnabled: false, // pagination désactivée
             uriTemplate: '/getarticles2', // création d'une route personnalisé
             name: 'getArticles2' // donner à la route un nom personnalisé
@@ -59,6 +59,13 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
     message: 'Un contenu similaire existe déjà'
 )]
 #[ORM\HasLifecycleCallbacks] // Activation de l'utilisation de fonction callback pour ajouter une date de création à toute nouvelle ressource Article
+#[ApiFilter(
+    searchFilter::class,
+    properties: [
+        'title' => 'partial',
+        'content' => 'partial'
+    ]
+)]
 class Article
 {
     #[ORM\Id]
@@ -76,7 +83,7 @@ class Article
         maxMessage: 'Le titre de l\'article doit avoir moins de {{ limit }} caractères'
     )]
     #[Groups(['books.read', 'books.write'])]
-    #[ApiFilter(SearchFilter::class, strategy: 'exact')]
+    // #[ApiFilter(SearchFilter::class, strategy: 'exact')]
     private ?string $title = null;
 
 
