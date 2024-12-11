@@ -2,14 +2,14 @@
 
 namespace App\Entity;
 
+use App\Entity\User;
 use ApiPlatform\Metadata\Get;
-use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\AuthorRepository;
+use ApiPlatform\Metadata\GetCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
-use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: AuthorRepository::class)]
 // Exposition de la ressource Author à l'aide des verbes HTTP GET et POST avec des groupes de sérialisation

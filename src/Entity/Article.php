@@ -16,7 +16,6 @@ use Doctrine\Persistence\Event\LifecycleEventArgs;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Serializer\Attribute\Groups;
-use Symfony\Component\Validator\Constraints\Cascade;
 
 #[ORM\Entity(repositoryClass: ArticleRepository::class)]
 // Déclaration de l'entité comme ressource API avec les verbes HTTP autorisées
