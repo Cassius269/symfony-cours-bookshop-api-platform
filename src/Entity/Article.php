@@ -9,13 +9,15 @@ use Doctrine\DBAL\Types\Types;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Delete;
 use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\ArticleRepository;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
+use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: ArticleRepository::class)]
 // Déclaration de l'entité comme ressource API avec les verbes HTTP autorisées
@@ -74,6 +76,7 @@ class Article
         maxMessage: 'Le titre de l\'article doit avoir moins de {{ limit }} caractères'
     )]
     #[Groups(['books.read', 'books.write'])]
+    #[ApiFilter(SearchFilter::class, strategy: 'partial')]
     private ?string $title = null;
 
 
