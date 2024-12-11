@@ -41,7 +41,8 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
         new GetCollection( // 2ème route pour rendre accessible l'ensemble des ressources avec une pagination désactivée 
             paginationEnabled: false, // pagination désactivée
             uriTemplate: '/getarticles2', // création d'une route personnalisé
-            name: 'getArticles2' // donner à la route un nom personnalisé
+            name: 'getArticles2', // donner à la route un nom personnalisé
+            filters: ['article.search_filter']
         ),
         new Post(), // créer une nouvelle ressource
         new Put(), // mettre à jour une ressource complètement
@@ -60,13 +61,13 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
     message: 'Un contenu similaire existe déjà'
 )]
 #[ORM\HasLifecycleCallbacks] // Activation de l'utilisation de fonction callback pour ajouter une date de création à toute nouvelle ressource Article
-#[ApiFilter(
-    searchFilter::class,
-    properties: [
-        'title' => 'partial',
-        'content' => 'partial'
-    ]
-)]
+// #[ApiFilter(
+//     searchFilter::class,
+//     properties: [
+//         'title' => 'partial',
+//         'content' => 'partial'
+//     ]
+// )]
 class Article
 {
     #[ORM\Id]
@@ -108,6 +109,10 @@ class Article
     #[ORM\ManyToOne(inversedBy: 'articles', cascade: ['persist'])]
     #[ORM\JoinColumn(nullable: true)]
     #[Groups(['authors.read', 'authors.write'])]
+    #[ApiFilter( // mise en place de filtre de recherche d'occurences avec une stratégie partielle
+        SearchFilter::class,
+        properties: ['author.firstname' => 'partial']
+    )]
     private ?Author $author = null;
 
     public function getId(): ?int

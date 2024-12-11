@@ -1,0 +1,5 @@
+services:
+  article.search_filter: #nom personnalisé du filtre
+    parent: "api_platform.doctrine.orm.search_filter"
+    arguments: [{ title: "partial", content: "partial" }] # définition des propriétés à filtrer ainsi que les stratégies choisies
+    tags: ["api_platform.filter"]
