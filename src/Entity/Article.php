@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Put;
 use ApiPlatform\Metadata\Post;
@@ -14,6 +13,8 @@ use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\ArticleRepository;
 use ApiPlatform\Metadata\GetCollection;
+use App\State\CustomGetCollectionProvider;
+use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
 use Symfony\Component\Serializer\Attribute\Groups;
@@ -36,7 +37,8 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
             paginationClientEnabled: true, // donner la possibilité au client de choisir l'activation de la pagination
             paginationClientItemsPerPage: true, // donner la possibilité au client de choisir le nombre d'objets ressources par page, 
             uriTemplate: '/getarticles', // création d'une route personnalisé
-            name: 'getArticles' // donner à la route un nom personnalisé
+            name: 'getArticles', // donner à la route un nom personnalisé
+            provider: CustomGetCollectionProvider::class
         ),
         new GetCollection( // 2ème route pour rendre accessible l'ensemble des ressources avec une pagination désactivée 
             paginationEnabled: false, // pagination désactivée
