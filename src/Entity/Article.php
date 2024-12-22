@@ -38,7 +38,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
             paginationClientItemsPerPage: true, // donner la possibilité au client de choisir le nombre d'objets ressources par page, 
             uriTemplate: '/getarticles', // création d'une route personnalisé
             name: 'getArticles', // donner à la route un nom personnalisé
-            provider: CustomGetCollectionProvider::class
+            provider: CustomGetCollectionProvider::class // utilisation d'un provider personnalisé pour la récupération des ressources en transformant les titres en majuscule
         ),
         new GetCollection( // 2ème route pour rendre accessible l'ensemble des ressources avec une pagination désactivée 
             paginationEnabled: false, // pagination désactivée
