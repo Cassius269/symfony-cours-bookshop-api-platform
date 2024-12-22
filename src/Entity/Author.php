@@ -6,6 +6,7 @@ use App\Entity\User;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Post;
 use Doctrine\ORM\Mapping as ORM;
+use App\State\InsertUserProcessor;
 use App\Repository\AuthorRepository;
 use ApiPlatform\Metadata\GetCollection;
 use Doctrine\Common\Collections\Collection;
@@ -20,7 +21,8 @@ use Doctrine\Common\Collections\ArrayCollection;
     normalizationContext: ['groups' => ['authors.read']]
 )]
 #[Post(
-    denormalizationContext: ['groups' => ['authors.write']]
+    denormalizationContext: ['groups' => ['authors.write']],
+    processor: InsertUserProcessor::class
 )]
 class Author extends User
 {
