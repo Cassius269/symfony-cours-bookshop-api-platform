@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Dto\ArticleDto;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Put;
 use ApiPlatform\Metadata\Post;
@@ -16,6 +17,7 @@ use ApiPlatform\Metadata\GetCollection;
 use App\State\CustomGetCollectionProvider;
 use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use App\State\ArticleAuthorStateProvider;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
 use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -40,15 +42,29 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
             name: 'getArticles', // donner à la route un nom personnalisé
             provider: CustomGetCollectionProvider::class // utilisation d'un provider personnalisé pour la récupération des ressources en transformant les titres en majuscule
         ),
+
         new GetCollection( // 2ème route pour rendre accessible l'ensemble des ressources avec une pagination désactivée 
             paginationEnabled: false, // pagination désactivée
             uriTemplate: '/getarticles2', // création d'une route personnalisé
             name: 'getArticles2', // donner à la route un nom personnalisé
             filters: ['article.search_filter']
         ),
+
+        new GetCollection( // 3ème route pour rendre accessible l'ensemble des ressources avec une pagination désactivée 
+            paginationEnabled: false, // pagination désactivée
+            uriTemplate: '/get-articles-with-author', // création d'une route personnalisé
+            name: 'getArticles3', // donner à la route un nom personnalisé
+            filters: ['article.search_filter'], // utilisation d'un filtre de recherche personnalisé  optionnel
+            provider: ArticleAuthorStateProvider::class, // utilisation d'un traitement personnalisé à la récuppération des ressources pour afficher titre d'un article et son auteur
+            output: ArticleDto::class // utilisation d'un DTO personnalisé pour la récupération des ressources, 
+        ),
+
         new Post(), // créer une nouvelle ressource
+
         new Put(), // mettre à jour une ressource complètement
+
         new Patch(), // mettre à jour une ressource en particulière de façon partielle
+
         new Delete() // supprimer une ressource Article
     ]
 )]
