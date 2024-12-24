@@ -16,7 +16,10 @@ class ArticleAuthorStateProvider implements ProviderInterface
 
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): object|array|null
     {
+        // Récupération de tous les articles présend dans la base de données
         $data = $this->collectionProvider->provide($operation, $uriVariables, $context);
+
+        // Création d'un tableau vide pour stocker les données à rendre à l'interface API
         $response = [];
 
         foreach ($data as $key => $value) {

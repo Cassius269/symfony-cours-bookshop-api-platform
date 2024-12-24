@@ -26,12 +26,12 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 #[ORM\Entity(repositoryClass: ArticleRepository::class)]
 // Déclaration de l'entité comme ressource API avec les verbes HTTP autorisées
 #[ApiResource(
-    // Exposition des champs en phases de serialization et déserialization
-    normalizationContext: ['groups' => ['books.read', 'authors.read']],
-    denormalizationContext: ['groups' => ['books.write', 'authors.write']],
     // Définition des verbes HTTP autorisées sur l'entité Article
     operations: [
-        new Get(), // rendre accessible une ressource grâce à son ID
+        new Get(
+            // Exposition des champs en phases de serialization
+            normalizationContext: ['groups' => ['books.read', 'authors.read']],
+        ), // rendre accessible une ressource grâce à son ID
 
         new GetCollection( // 1ère route pour rendre accessible l'ensemble des ressources avec une pagination activée 
             paginationEnabled: true, // pagination de la data activée par défaut
@@ -47,7 +47,9 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
             paginationEnabled: false, // pagination désactivée
             uriTemplate: '/getarticles2', // création d'une route personnalisé
             name: 'getArticles2', // donner à la route un nom personnalisé
-            filters: ['article.search_filter']
+            filters: ['article.search_filter'],
+            // Exposition des champs en phases de serialization
+            normalizationContext: ['groups' => ['books.read', 'authors.read']],
         ),
 
         new GetCollection( // 3ème route pour rendre accessible l'ensemble des ressources avec une pagination désactivée 
@@ -56,16 +58,26 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
             name: 'getArticles3', // donner à la route un nom personnalisé
             filters: ['article.search_filter'], // utilisation d'un filtre de recherche personnalisé  optionnel
             provider: ArticleAuthorStateProvider::class, // utilisation d'un traitement personnalisé à la récuppération des ressources pour afficher titre d'un article et son auteur
-            output: ArticleDto::class // utilisation d'un DTO personnalisé pour la récupération des ressources, 
+            output: ArticleDto::class, // utilisation d'un DTO personnalisé pour la récupération des ressources, 
         ),
 
-        new Post(), // créer une nouvelle ressource
+        new Post(
+            // créer une nouvelle ressource
+            // Exposition des champs en phases de déserialization
+            denormalizationContext: ['groups' => ['books.write', 'authors.write']],
+        ),
 
-        new Put(), // mettre à jour une ressource complètement
-
-        new Patch(), // mettre à jour une ressource en particulière de façon partielle
-
-        new Delete() // supprimer une ressource Article
+        new Put(
+            // mettre à jour une ressource complètement
+            // Exposition des champs en phases de déserialization
+            denormalizationContext: ['groups' => ['books.write', 'authors.write']],
+        ),
+        new Patch(
+            // mettre à jour une ressource en particulière de façon partielle
+            // Exposition des champs en phases de déserialization
+            denormalizationContext: ['groups' => ['books.write', 'authors.write']],
+        ),
+        new Delete() // supprimer une ressource Article à l'aide de son ID
     ]
 )]
 // Vérifier séparemment si la donnée titre d'un article est unique dans la base de données

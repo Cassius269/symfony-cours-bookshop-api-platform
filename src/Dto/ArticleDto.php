@@ -6,10 +6,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
 
 class ArticleDto
 {
-    #[Groups(['books.read'])]
     private string $title;
-
-    #[Groups(['authors.read'])]
     private string $author;
 
     public function getTitle()
