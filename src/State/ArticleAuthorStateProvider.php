@@ -5,6 +5,7 @@ namespace App\State;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
 use App\Dto\ArticleDto;
+use App\Dto\ArticleRequestDto;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 class ArticleAuthorStateProvider implements ProviderInterface
@@ -23,7 +24,7 @@ class ArticleAuthorStateProvider implements ProviderInterface
         $response = [];
 
         foreach ($data as $key => $value) {
-            $article = new ArticleDto(); // Création d'un objet ArticleDto
+            $article = new ArticleRequestDto(); // Création d'un objet ArticleDto
             // Remplissage de l'objet ArticleDto avec les données de l'entité Article
             $article->setTitle($value->getTitle());
             $author = $value->getAuthor() ?? null;

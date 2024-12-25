@@ -2,7 +2,6 @@
 
 namespace App\State;
 
-use App\Entity\Author;
 use ApiPlatform\Metadata\Operation;
 use Doctrine\ORM\EntityManagerInterface;
 use ApiPlatform\State\ProcessorInterface;
@@ -28,6 +27,9 @@ class InsertUserProcessor implements ProcessorInterface
         // Mettre à jour le mot de passe de l'utilisateur par celui qui est hashé
         $data->setPassword($hashedPassword);
 
+        // Ajouter la date de création d'un nouvel utilisateur
+        $data->setCreatedAt(new \DateTimeImmutable());
+
         // Envoyer en base de données le User recemment hashé
         $this->entityManager->persist($data);
         $this->entityManager->flush();
@@ -36,6 +38,6 @@ class InsertUserProcessor implements ProcessorInterface
         $jsonData = $this->serializer->serialize($data, 'json', ['groups' => 'authors.read']);
 
         // Retourner une réponse JSON
-        return new JsonResponse($jsonData, Response::HTTP_CREATED, [], true);
+        return new JsonResponse($jsonData, 201, [], true);
     }
 }

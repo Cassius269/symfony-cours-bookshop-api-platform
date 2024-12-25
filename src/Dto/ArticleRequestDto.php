@@ -2,14 +2,12 @@
 
 namespace App\Dto;
 
-use Symfony\Component\Serializer\Attribute\Groups;
-
-class ArticleDto
+class ArticleRequestDto
 {
     private string $title;
     private string $author;
 
-    public function getTitle()
+    public function getTitle(): string
     {
         return $this->title;
     }
@@ -27,7 +25,7 @@ class ArticleDto
         return $this;
     }
 
-    public function getAuthor()
+    public function getAuthor(): string
     {
         return $this->author;
     }

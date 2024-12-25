@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use App\Dto\ArticleDto;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Put;
 use ApiPlatform\Metadata\Post;
@@ -14,10 +13,13 @@ use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\ArticleRepository;
 use ApiPlatform\Metadata\GetCollection;
+use App\State\ArticleAuthorStateProvider;
+use App\State\ArticleAuthorStateProcessor;
 use App\State\CustomGetCollectionProvider;
 use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
-use App\State\ArticleAuthorStateProvider;
+use App\Dto\ArticleRequestDto;
+use App\Dto\ArticleResponseDto;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
 use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -58,13 +60,15 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
             name: 'getArticles3', // donner à la route un nom personnalisé
             filters: ['article.search_filter'], // utilisation d'un filtre de recherche personnalisé  optionnel
             provider: ArticleAuthorStateProvider::class, // utilisation d'un traitement personnalisé à la récuppération des ressources pour afficher titre d'un article et son auteur
-            output: ArticleDto::class, // utilisation d'un DTO personnalisé pour la récupération des ressources, 
+            output: ArticleRequestDto::class, // utilisation d'un DTO personnalisé pour la récupération des ressources, 
         ),
 
         new Post(
             // créer une nouvelle ressource
-            // Exposition des champs en phases de déserialization
-            denormalizationContext: ['groups' => ['books.write', 'authors.write']],
+            uriTemplate: '/article-with-author', // url personnalisé de la route
+            name: 'save-article-with-author', // nom personnalisé de la route
+            processor: ArticleAuthorStateProcessor::class, // liaison du processeur personnalisé à la route de création de ressource article plus son auteur,
+            input: ArticleResponseDto::class,
         ),
 
         new Put(
