@@ -64,7 +64,6 @@ class ArticleAuthorStateProcessor implements ProcessorInterface
             // ->setFirstname($article->getAuthor()->getFirstname())
             ->setAuthor($article->getAuthor()->getFullname());
 
-
-        return $articleDto;
+        return $articleDto; // renvoyer la ressource nouvellement créé au client (navigateur, utilisateur par exemple) en passant par le DTO
     }
 }
