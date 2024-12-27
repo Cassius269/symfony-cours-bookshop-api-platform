@@ -4,7 +4,6 @@ namespace App\State;
 
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
-use App\Dto\ArticleDto;
 use App\Dto\ArticleRequestDto;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 

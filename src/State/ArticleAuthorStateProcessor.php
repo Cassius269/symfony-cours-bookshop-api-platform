@@ -9,12 +9,15 @@ use App\Repository\AuthorRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use ApiPlatform\State\ProcessorInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\Validator\Validator\ValidatorInterface as ValidatorValidatorInterface;
 
 class ArticleAuthorStateProcessor implements ProcessorInterface
 {
     public function __construct(
         private EntityManagerInterface $entityManager,
-        private AuthorRepository $authorRepository
+        private AuthorRepository $authorRepository,
+        private ValidatorValidatorInterface $validator
     ) {}
 
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = [])
@@ -35,6 +38,19 @@ class ArticleAuthorStateProcessor implements ProcessorInterface
 
         $article->setAuthor($similarAuthor);
 
+        // Validation des données avant envoi en base de données
+        $errors = $this->validator->validate($article); // rechercher les erreurs ne remplissant pas les contraintes de validation des données de l'entité Article
+
+        if (count($errors) > 0) { // s'il y a des erreurs trouvées
+            $errorMessages = [];
+
+            // Générer une erreur 400 (= "bad request") avec les messages d'erreur détaillés
+            foreach ($errors as $error) {
+                $errorMessages[$error->getPropertyPath()][] = $error->getMessage();
+            }
+            throw new BadRequestHttpException(json_encode($errorMessages));
+        }
+
         // Enregistrement et envoi en base de données de l'article avec son auteur renseigné
         $this->entityManager->persist($article);
         $this->entityManager->flush();
@@ -42,8 +58,6 @@ class ArticleAuthorStateProcessor implements ProcessorInterface
 
         // Retourner une réponse à l'interface de l'API
         $articleDto = new ArticleResponseDto();
-
-        $fullname = $article->getAuthor()->getFullname();
 
         $articleDto->setTitle($data->getTitle())
             // ->setContent($data->getContent())

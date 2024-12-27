@@ -24,6 +24,7 @@ use Doctrine\Persistence\Event\LifecycleEventArgs;
 use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints\Unique;
 
 #[ORM\Entity(repositoryClass: ArticleRepository::class)]
 // Déclaration de l'entité comme ressource API avec les verbes HTTP autorisées
@@ -68,7 +69,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
             uriTemplate: '/article-with-author', // url personnalisé de la route
             name: 'save-article-with-author', // nom personnalisé de la route
             processor: ArticleAuthorStateProcessor::class, // liaison du processeur personnalisé à la route de création de ressource article plus son auteur,
-            input: ArticleResponseDto::class,
+            input: ArticleResponseDto::class, // utilisation d'un DTO personnalisé pour la récupération des données envoyées par le clien (navigateur, utilisateur, ect)
         ),
 
         new Put(
