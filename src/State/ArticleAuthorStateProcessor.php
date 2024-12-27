@@ -8,6 +8,7 @@ use ApiPlatform\Metadata\Operation;
 use App\Repository\AuthorRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use ApiPlatform\State\ProcessorInterface;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ArticleAuthorStateProcessor implements ProcessorInterface
 {
@@ -28,7 +29,8 @@ class ArticleAuthorStateProcessor implements ProcessorInterface
         $similarAuthor = $this->authorRepository->findOneByEmail($data->getEmail()); // recherche de l'auteur via l'email renseigne dans la charge utile de la requête POST de création d'article
 
         if (!$similarAuthor) {
-            dd('auteur inexistant');
+            // Générer une erreur 404 si l'auteur n'existe pas
+            throw new NotFoundHttpException('Auteur inexistant');
         }
 
         $article->setAuthor($similarAuthor);
