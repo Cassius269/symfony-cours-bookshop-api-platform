@@ -10,4 +10,4 @@ auth:
 
 #Mise en place de la route de rafraichissement de token JWT
 api_refresh_token:
-  path: /api/token/refresh
+  path: /token/refresh
