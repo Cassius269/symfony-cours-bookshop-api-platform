@@ -9,7 +9,10 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 class CustomGetCollectionProvider implements ProviderInterface
 {
-    public function __construct(private ArticleRepository $articleRepository, #[Autowire(service: 'api_platform.doctrine.orm.state.collection_provider')] private ProviderInterface $providerInterface) {}
+    public function __construct(
+        #[Autowire(service: 'api_platform.doctrine.orm.state.collection_provider')]
+        private ProviderInterface $providerInterface
+    ) {}
 
 
 
